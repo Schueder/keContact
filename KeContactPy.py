@@ -330,4 +330,63 @@ class keContact:
           """
           self.sqlConnect.commit()
           self.sqlConnect.close()
-    
+
+     def enable(en):
+        """
+        Call this method to enable or disable the walbax and the charging process
+        In this register, the charging station can be enabled or disabled. An active charging process will be stopped.
+        Supported values:
+            ● 0: Disable charging station
+            ● 1: Enable charging station
+        """
+        self.client.write_multiple_registers(5014,[en]);
+
+     def setFailSave(fsCurrent=0, fsTimeout=0, fsPersist=0):
+            """
+            This method defines the settings of the Failsave posiibilities.
+            The first parameter defines if the charging can be deactivated in case the connection between the PDC and the Smart Home System is down. An active charging process will be stopped.
+            Supported values:
+                ● 0: Deactivates charging
+                ● 6 - 32: Sets Failsafe current [A]
+            
+            
+            The second parameter defines, if the Failsafe can be deactivated when no modbus TCP command was sent in between.
+            Supported values:
+                ● 0: Deactivates charging, charging will continue with the highest possible value
+                ● 10 - 600: Sets Failsafe Timeout [s]
+            
+            The thierd parameter, defines the Failsafe settings can be persisted.
+            Supported values:
+                ● 1: current Failsafe settings will be persisted
+            
+            Call this method without parameters will disable the Failsave settings
+            """
+        self.client.write_multiple_registers(5016,[fsCurrent*1000]);
+        self.client.write_multiple_registers(5018,[fsTimeout]);
+        self.client.write_multiple_registers(5020,[fsPersist]);
+
+     def setChargingCurrent(current):
+        """
+        In this register, the charging current can be set in order to control the charg- ing current. This command directly changes the value permanently and is valid as long as the device will be rebooted. If the charging current of the charging station needs to be lowered permanently, a reconfiguration of the DIP switch settings is recommended (for more information see "Installation Manual").
+        Supported values:
+            ● 6 − 63 A
+        """
+        self.client.write_multiple_registers(5004,[current]);
+
+     def setEnergie(energie):
+        """
+        In this register, the energy transmission (in 10 watt-hours) for the current or the next charging session can be set. Once this value is reached, the charg- ing session is terminated. 
+        Example:
+            Value 1: The charging session is terminated after an energy transmission 
+            of 1 Wh = 0.001 kWh.
+        """
+        self.client.write_multiple_registers(5010,[energie/10]);
+        
+     def unlockPlug():
+        """
+        In this register, the plug of the charging station can be unlocked. This is only possible, if the charging station is in suspended state. An ongoing session can be stopped with register 5014 (disable charging station).
+        
+        !!! Information: The charging process must be stopped beforehand !!!
+        """
+        self.client.write_multiple_registers(5012,[0]);
+        
