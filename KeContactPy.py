@@ -371,7 +371,7 @@ class keContact:
         Supported values:
             ● 6 − 63 A
         """
-        self.client.write_multiple_registers(5004,[current*100]);
+        self.client.write_multiple_registers(5004,[current*1000]);
 
      def setEnergie(energie):
         """
